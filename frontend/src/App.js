@@ -1,23 +1,30 @@
+import { useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import LoginForm from './LoginForm.js';
 
 function App() {
+  const [user, setUser] = useState(null);
+
+  function handleSuccessLogin(usernameValue) {
+    var user = {username: usernameValue};
+    setUser(user);
+    alert("User: "+user);
+  }
+
+  const isLoggedIn = user === null;
+
+  const loggedOut = (
+    <LoginForm onLogin={handleSuccessLogin} />
+  );
+
+  const loggedIn = (
+    <p>Welcome {user === null ? "" : user.username}</p>
+  );
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {isLoggedIn ? loggedOut : loggedIn}
     </div>
   );
 }
