@@ -2,6 +2,7 @@ import { useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import LoginForm from './LoginForm.js';
+import Lobby from './lobby/Lobby.js';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -9,7 +10,7 @@ function App() {
   function handleSuccessLogin(usernameValue) {
     var user = {username: usernameValue};
     setUser(user);
-    alert("User: "+user);
+    console.log("App user: "+JSON.stringify(user));
   }
 
   const isLoggedIn = user === null;
@@ -19,7 +20,10 @@ function App() {
   );
 
   const loggedIn = (
-    <p>Welcome {user === null ? "" : user.username}</p>
+    <div>
+        <p>Welcome {user === null ? "" : user.username}</p>
+        <Lobby />
+    </div>
   );
 
   return (

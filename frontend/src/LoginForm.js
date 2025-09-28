@@ -1,18 +1,41 @@
 import React from 'react';
 
 function LoginForm({onLogin}) {
-    function onSubmit() {
+    function onSubmit(e) {
+        e.preventDefault();
         var ele = document.getElementById("username");
-        alert("Login form says username is : "+ele.value);
-        onLogin(ele.value);
+
+        async function registerPlayer(playerNameValue) {
+            var player = {playerName: ele.value};
+
+            const requestOptions = {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: "include",
+              body: JSON.stringify(player),
+            };
+
+            console.log("Sending:\n"+JSON.stringify(requestOptions));
+
+            const response = await fetch("http://localhost/api/players", requestOptions);
+            console.log("Awaited response: "+response);
+            const json = await response.json();
+            console.log("Awaited json: "+JSON.stringify(json));
+            onLogin(json.playerName)
+            return json;
+        }
+
+        const playerJSON = registerPlayer(ele.value);
+        console.log("Returning false");
+        return false;
     }
 
     return (
         <div>
             <p>Please choose a username:</p>
-            <form onSubmit={onSubmit}>
+            <form>
                 <input type="text" placeholder="Username" id="username" />
-                <input type="submit" value="Proceed" />
+                <button onClick={onSubmit}>Continue</button>
             </form>
         </div>
     );
