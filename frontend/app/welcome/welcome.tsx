@@ -1,5 +1,6 @@
 import logoDark from "./logo-dark.svg";
 import logoLight from "./logo-light.svg";
+import Board from "../board/board"
 
 export function Welcome() {
   return (
@@ -41,6 +42,7 @@ export function Welcome() {
             </ul>
           </nav>
         </div>
+        <Board />
       </div>
     </main>
   );
