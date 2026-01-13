@@ -1,6 +1,6 @@
 import logoDark from "./logo-dark.svg";
 import logoLight from "./logo-light.svg";
-import Board from "../board/board"
+import Board from "../board/board";
 
 export function Welcome() {
   return (
