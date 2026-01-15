@@ -337,11 +337,39 @@ export function Board() {
 
     const pieces = React.createElement('g',{},piecesSvgJsx);
 
+    function mousePointToSvgPoint(mouseEvent) {
+        var svg = document.getElementById("svg");
+        var pt = svg.createSVGPoint();
+
+        pt.x = mouseEvent.clientX;
+        pt.y = mouseEvent.clientY;
+        var cursorPt = pt.matrixTransform(svg.getScreenCTM().inverse());
+        return cursorPt;
+    }
+
+    function svgPointToBoardPoint(svgPoint) {
+        var boardX = Math.floor(svgPoint.x / 50) % 8;
+        var boardY = Math.floor(svgPoint.y / 50) % 8;
+        return { x: boardX, y: boardY };
+    }
+
+    function boardOnClick(mouseEvent) {
+        var msg = "";
+
+        var svgPoint = mousePointToSvgPoint(mouseEvent);
+        var boardPoint = svgPointToBoardPoint(svgPoint);
+
+        msg+= "("+svgPoint.x+","+svgPoint.y+") -> ("+boardPoint.x+", "+boardPoint.y+")";
+        alert(msg);
+    }
+
     return (<svg
         xmlns="http://www.w3.org/2000/svg"
         width="640"
         height="640"
-        viewBox="0 0 400 400">
+        viewBox="0 0 400 400"
+        id="svg"
+        onClick={boardOnClick}>
                 <rect x="0" y="0" height="400" width="400" fill="darkblue"/>
 
                 {squares}
