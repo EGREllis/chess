@@ -278,6 +278,7 @@ function convertPieceToSvg(piece) {
 }
 
 export function Board() {
+    const size = 50;
     const lightSquares = [  {x:0,y:0},  {x:2,y:0},  {x:4,y:0},  {x:6,y:0},
                             {x:1,y:1},  {x:3,y:1},  {x:5,y:1},  {x:7,y:1},
                             {x:0,y:2},  {x:2,y:2},  {x:4,y:2},  {x:6,y:2},
@@ -288,13 +289,13 @@ export function Board() {
                             {x:1,y:7},  {x:3,y:7},  {x:5,y:7},  {x:7,y:7}
                          ];
     const lightSquaresSvgJsx = lightSquares.map( (point) => (
-        React.createElement('rect', {x: (point.x * 50), y: (point.y * 50), height: 50, width: 50, fill: "lightgreen"},)
+        React.createElement('rect', {x: (point.x * size), y: (point.y * size), height: size, width: size, fill: "lightgreen"},)
         ));
 
     const squares = React.createElement('g',{},lightSquaresSvgJsx);
 
     const [currentPieces, setCurrentPieces] = useState({
-        turn:"white",
+        turn:"black",
         pieces:[{x:0,   y:0,    colour:"black", type:"rook"},
                 {x:1,   y:0,    colour:"black", type:"knight"},
                 {x:2,   y:0,    colour:"black", type:"bishop"},
@@ -330,6 +331,7 @@ export function Board() {
                 // More to follow but really ought to be provided by the server
                 ]
         });
+    const [selected, setSelected] = useState(null);
 
     const piecesSvgJsx = currentPieces.pieces.map( (piece) =>
         convertPieceToSvg(piece)
@@ -337,31 +339,86 @@ export function Board() {
 
     const pieces = React.createElement('g',{},piecesSvgJsx);
 
-    function mousePointToSvgPoint(mouseEvent) {
+    function filterOutSelectedPiece() {
+        if (selected === null) {
+            return currentPieces.pieces;
+        }
+        const result = [];
+        for (const pieceIndex in currentPieces.pieces) {
+            const piece = currentPieces.pieces[pieceIndex];
+            if (piece.x === selected.x && piece.y === selected.y) {
+                // Do nothing
+            } else {
+                result.push(piece);
+            }
+        }
+        return result;
+    }
+
+    function mousePointToBoardPoint(mouseEvent) {
         var svg = document.getElementById("svg");
         var pt = svg.createSVGPoint();
 
         pt.x = mouseEvent.clientX;
         pt.y = mouseEvent.clientY;
         var cursorPt = pt.matrixTransform(svg.getScreenCTM().inverse());
-        return cursorPt;
-    }
-
-    function svgPointToBoardPoint(svgPoint) {
-        var boardX = Math.floor(svgPoint.x / 50) % 8;
-        var boardY = Math.floor(svgPoint.y / 50) % 8;
+        var boardX = Math.floor(cursorPt.x / size) % 8;
+        var boardY = Math.floor(cursorPt.y / size) % 8;
         return { x: boardX, y: boardY };
     }
 
-    function boardOnClick(mouseEvent) {
-        var msg = "";
-
-        var svgPoint = mousePointToSvgPoint(mouseEvent);
-        var boardPoint = svgPointToBoardPoint(svgPoint);
-
-        msg+= "("+svgPoint.x+","+svgPoint.y+") -> ("+boardPoint.x+", "+boardPoint.y+")";
-        alert(msg);
+    function selectPiece(allPieces, boardPoint) {
+        var found = null;
+        for (const pieceIndex in allPieces) {
+            const piece = allPieces[pieceIndex];
+            if (piece.x === boardPoint.x && piece.y === boardPoint.y) {
+                found = piece;
+            }
+        }
+        if (found != null) {
+            setSelected(found);
+        }
     }
+
+    function boardMouseDown(mouseEvent) {
+        const boardPoint = mousePointToBoardPoint(mouseEvent);
+        selectPiece(currentPieces.pieces, boardPoint);
+    }
+
+    function updateBoard(boardPoint) {
+        if (selected === null) {
+            return;
+        }
+        const result = [];
+        for (const pieceIndex in currentPieces.pieces) {
+            const piece = currentPieces.pieces[pieceIndex];
+            if (piece.x === selected.x && piece.y === selected.y) {
+                // This is the selected piece, move it to the current location.
+                piece.x = boardPoint.x;
+                piece.y = boardPoint.y;
+                result.push(piece);
+            } else if (piece.x === boardPoint.x && piece.y === boardPoint.y) {
+                // Do nothing, this piece is taken
+            } else {
+                // This piece did nothing.
+                result.push(piece);
+            }
+        }
+        const nextTurn = currentPieces.turn === "black" ? "white" : "black";
+        setCurrentPieces({turn: nextTurn, pieces: result});
+        setSelected(null);
+    }
+
+    function boardMouseUp(mouseEvent) {
+        const boardPoint = mousePointToBoardPoint(mouseEvent);
+        updateBoard(boardPoint);
+    }
+
+    const displayPiecesData = filterOutSelectedPiece();
+    const displayPiecesSvgJsx = displayPiecesData.map( (piece) =>
+            convertPieceToSvg(piece)
+        );
+    const displayPieces = React.createElement('g',{}, displayPiecesSvgJsx);
 
     return (<svg
         xmlns="http://www.w3.org/2000/svg"
@@ -369,11 +426,12 @@ export function Board() {
         height="640"
         viewBox="0 0 400 400"
         id="svg"
-        onClick={boardOnClick}>
+        onMouseDown={boardMouseDown}
+        onMouseUp={boardMouseUp}>
                 <rect x="0" y="0" height="400" width="400" fill="darkblue"/>
 
                 {squares}
-                {pieces}
+                {displayPieces}
             </svg>);
 }
 
