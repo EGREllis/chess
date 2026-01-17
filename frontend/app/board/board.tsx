@@ -341,7 +341,7 @@ export function Board() {
         const boardPoint = mousePointToBoardPoint(mouseEvent);
         const newSelected = selectPiece(currentPieces.pieces, boardPoint);
         // Prevent moving pieces if it is not their turn.
-        if (newSelected.colour === currentPieces.turn) {
+        if (newSelected != null && newSelected.colour === currentPieces.turn) {
             setSelected(newSelected);
         }
     }
@@ -359,9 +359,7 @@ export function Board() {
                 if (boardPoint.x === selected.x && boardPoint.y === selected.y) {
                     moved = false;
                 }
-                piece.x = boardPoint.x;
-                piece.y = boardPoint.y;
-                result.push(piece);
+                result.push({x: boardPoint.x, y: boardPoint.y, colour: piece.colour, type: piece.type});
             } else if (piece.x === boardPoint.x && piece.y === boardPoint.y) {
                 // Do nothing, this piece is taken
             } else {
@@ -392,7 +390,7 @@ export function Board() {
 
     const selectedPiece = selected === null ? <g></g> : convertPieceToSvg(selected);
 
-    return (<svg
+    return (<div><p>Turn: {currentPieces.turn}</p><svg
         xmlns="http://www.w3.org/2000/svg"
         width="640"
         height="640"
@@ -409,7 +407,8 @@ export function Board() {
                         {selectedPiece}
                     </g>
                 </g>
-            </svg>);
+            </svg>
+        </div>);
 }
 
 export default Board;
