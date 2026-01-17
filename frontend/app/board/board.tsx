@@ -14,31 +14,15 @@ function convertPieceToSvg(piece) {
     const stroke = colour === "black" ? "#ffffff" : "#000000";
 
     const stylePawn = {
-        opacity: 1,
         fill: fill,
-        "fill-opacity": 1,
         "fill-rule": "nonzero",
         stroke: stroke,
-        "stroke-width": 1.5,
-        "stroke-linecap": "round",
-        "stroke-linejoin": "miter",
-        "stroke-miterlimit": 4,
-        "stroke-dasharray": "none",
-        "stroke-opacity":1
+        "stroke-linejoin": "miter"
     };
 
     const styleRook = {
-        opacity: 1,
         fill: fill,
-        "fill-opacity": 1,
-        "fill-rule": "evenodd",
-        stroke: stroke,
-        "stroke-width": 1.5,
-        "stroke-linecap": "round",
-        "stroke-linejoin": "round",
-        "stroke-miterlimit": 4,
-        "stroke-dasharray": "none",
-        "stroke-opacity": 1
+        stroke: stroke
     };
     const styleRookLineCap = {
         "stroke-linecap": "butt"
@@ -55,17 +39,8 @@ function convertPieceToSvg(piece) {
     };
 
     const styleKnight = {
-        opacity: 1,
         fill: "none",
-        "fill-opacity": 1,
-        "fill-rule": "evenodd",
-         "stroke": stroke,
-         "stroke-width": 1.5,
-         "stroke-linecap": "round",
-         "stroke-linejoin": "round",
-         "stroke-miterlimit": 4,
-         "stroke-dasharray": "none",
-         "stroke-opacity":1
+         "stroke": stroke
     };
     const styleKnightBase = {
         fill: fill,
@@ -81,17 +56,8 @@ function convertPieceToSvg(piece) {
     };
 
     const styleBishop = {
-        opacity: 1,
         fill: "none",
-        "fill-rule": "evenodd",
-        "fill-opacity": 1,
-        stroke: stroke,
-        "stroke-width": 1.5,
-        "stroke-linecap": "round",
-        "stroke-linejoin": "round",
-        "stroke-miterlimit": 4,
-        "stroke-dasharray": "none",
-        "stroke-opacity": 1
+        stroke: stroke
     };
     const styleBishopMain = {
         fill: fill,
@@ -105,17 +71,8 @@ function convertPieceToSvg(piece) {
     };
 
     const styleQueen = {
-        opacity: 1,
         fill: fill,
-        "fill-opacity": 1,
-        "fill-rule": "evenodd",
-        stroke: stroke,
-        "stroke-width": 1.5,
-        "stroke-linecap": "round",
-        "stroke-linejoin": "round",
-        "stroke-miterlimit": 4,
-        "stroke-dasharray": "none",
-        "stroke-opacity": 1
+        stroke: stroke
     };
     const styleQueenLineCapOnly = {
         "stroke-linecap": "butt"
@@ -123,15 +80,7 @@ function convertPieceToSvg(piece) {
 
     const styleKing = {
         fill: fill,
-        "fill-opacity": 1,
-        "fill-rule": "evenodd",
-        stroke: stroke,
-        "stroke-width": 1.5,
-        "stroke-linecap": "round",
-        "stroke-linejoin": "round",
-        "stroke-miterlimit": 4,
-        "stroke-dasharray": "none",
-        "stroke-opacity": 1
+        stroke: stroke
     };
     const styleKingMiter = {
         "stroke-linejoin": "miter"
@@ -278,6 +227,22 @@ function convertPieceToSvg(piece) {
 }
 
 export function Board() {
+    const generalPieceStyle = {
+        opacity: 1,
+        "fill-opacity": 1,
+        "fill-rule": "evenodd",
+        "stroke-width": 1.5,
+        "stroke-linecap": "round",
+        "stroke-linejoin": "round",
+        "stroke-miterlimit": 4,
+        "stroke-dasharray": "none",
+        "stroke-opacity":1
+    };
+    const selectedPieceStyle = {
+        opacity: 0.5,
+        "fill-opacity": 0.5,
+        "stroke-opacity": 0.5
+    };
     const size = 50;
     const lightSquares = [  {x:0,y:0},  {x:2,y:0},  {x:4,y:0},  {x:6,y:0},
                             {x:1,y:1},  {x:3,y:1},  {x:5,y:1},  {x:7,y:1},
@@ -333,12 +298,6 @@ export function Board() {
         });
     const [selected, setSelected] = useState(null);
 
-    const piecesSvgJsx = currentPieces.pieces.map( (piece) =>
-        convertPieceToSvg(piece)
-    );
-
-    const pieces = React.createElement('g',{},piecesSvgJsx);
-
     function filterOutSelectedPiece() {
         if (selected === null) {
             return currentPieces.pieces;
@@ -375,14 +334,16 @@ export function Board() {
                 found = piece;
             }
         }
-        if (found != null) {
-            setSelected(found);
-        }
+        return found;
     }
 
     function boardMouseDown(mouseEvent) {
         const boardPoint = mousePointToBoardPoint(mouseEvent);
-        selectPiece(currentPieces.pieces, boardPoint);
+        const newSelected = selectPiece(currentPieces.pieces, boardPoint);
+        // Prevent moving pieces if it is not their turn.
+        if (newSelected.colour === currentPieces.turn) {
+            setSelected(newSelected);
+        }
     }
 
     function updateBoard(boardPoint) {
@@ -390,10 +351,14 @@ export function Board() {
             return;
         }
         const result = [];
+        var moved = true;
         for (const pieceIndex in currentPieces.pieces) {
             const piece = currentPieces.pieces[pieceIndex];
             if (piece.x === selected.x && piece.y === selected.y) {
                 // This is the selected piece, move it to the current location.
+                if (boardPoint.x === selected.x && boardPoint.y === selected.y) {
+                    moved = false;
+                }
                 piece.x = boardPoint.x;
                 piece.y = boardPoint.y;
                 result.push(piece);
@@ -404,7 +369,12 @@ export function Board() {
                 result.push(piece);
             }
         }
-        const nextTurn = currentPieces.turn === "black" ? "white" : "black";
+        var nextTurn = null;
+        if (moved) {
+            nextTurn = currentPieces.turn === "black" ? "white" : "black";
+        } else {
+            nextTurn = currentPieces.turn;
+        }
         setCurrentPieces({turn: nextTurn, pieces: result});
         setSelected(null);
     }
@@ -420,6 +390,8 @@ export function Board() {
         );
     const displayPieces = React.createElement('g',{}, displayPiecesSvgJsx);
 
+    const selectedPiece = selected === null ? <g></g> : convertPieceToSvg(selected);
+
     return (<svg
         xmlns="http://www.w3.org/2000/svg"
         width="640"
@@ -431,7 +403,12 @@ export function Board() {
                 <rect x="0" y="0" height="400" width="400" fill="darkblue"/>
 
                 {squares}
-                {displayPieces}
+                <g style={generalPieceStyle}>
+                    {displayPieces}
+                    <g style={selectedPieceStyle}>
+                        {selectedPiece}
+                    </g>
+                </g>
             </svg>);
 }
 
