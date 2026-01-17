@@ -259,8 +259,9 @@ export function Board() {
 
     const squares = React.createElement('g',{},lightSquaresSvgJsx);
 
-    const [currentPieces, setCurrentPieces] = useState({
+    const [currentState, setCurrentState] = useState({
         turn:"black",
+        selected: null,
         pieces:[{x:0,   y:0,    colour:"black", type:"rook"},
                 {x:1,   y:0,    colour:"black", type:"knight"},
                 {x:2,   y:0,    colour:"black", type:"bishop"},
@@ -296,16 +297,15 @@ export function Board() {
                 // More to follow but really ought to be provided by the server
                 ]
         });
-    const [selected, setSelected] = useState(null);
 
     function filterOutSelectedPiece() {
-        if (selected === null) {
-            return currentPieces.pieces;
+        if (currentState.selected === null) {
+            return currentState.pieces;
         }
         const result = [];
-        for (const pieceIndex in currentPieces.pieces) {
-            const piece = currentPieces.pieces[pieceIndex];
-            if (piece.x === selected.x && piece.y === selected.y) {
+        for (const pieceIndex in currentState.pieces) {
+            const piece = currentState.pieces[pieceIndex];
+            if (piece.x === currentState.selected.x && piece.y === currentState.selected.y) {
                 // Do nothing
             } else {
                 result.push(piece);
@@ -326,7 +326,7 @@ export function Board() {
         return { x: boardX, y: boardY };
     }
 
-    function selectPiece(allPieces, boardPoint) {
+    function identifySelectPiece(allPieces, boardPoint) {
         var found = null;
         for (const pieceIndex in allPieces) {
             const piece = allPieces[pieceIndex];
@@ -339,24 +339,24 @@ export function Board() {
 
     function boardMouseDown(mouseEvent) {
         const boardPoint = mousePointToBoardPoint(mouseEvent);
-        const newSelected = selectPiece(currentPieces.pieces, boardPoint);
+        const newSelected = identifySelectPiece(currentState.pieces, boardPoint);
         // Prevent moving pieces if it is not their turn.
-        if (newSelected != null && newSelected.colour === currentPieces.turn) {
-            setSelected(newSelected);
+        if (newSelected != null && newSelected.colour === currentState.turn) {
+            setCurrentState({turn: currentState.turn, selected: newSelected, pieces: currentState.pieces});
         }
     }
 
     function updateBoard(boardPoint) {
-        if (selected === null) {
+        if (currentState.selected === null) {
             return;
         }
         const result = [];
         var moved = true;
-        for (const pieceIndex in currentPieces.pieces) {
-            const piece = currentPieces.pieces[pieceIndex];
-            if (piece.x === selected.x && piece.y === selected.y) {
+        for (const pieceIndex in currentState.pieces) {
+            const piece = currentState.pieces[pieceIndex];
+            if (piece.x === currentState.selected.x && piece.y === currentState.selected.y) {
                 // This is the selected piece, move it to the current location.
-                if (boardPoint.x === selected.x && boardPoint.y === selected.y) {
+                if (boardPoint.x === currentState.selected.x && boardPoint.y === currentState.selected.y) {
                     moved = false;
                 }
                 result.push({x: boardPoint.x, y: boardPoint.y, colour: piece.colour, type: piece.type});
@@ -369,12 +369,11 @@ export function Board() {
         }
         var nextTurn = null;
         if (moved) {
-            nextTurn = currentPieces.turn === "black" ? "white" : "black";
+            nextTurn = currentState.turn === "black" ? "white" : "black";
         } else {
-            nextTurn = currentPieces.turn;
+            nextTurn = currentState.turn;
         }
-        setCurrentPieces({turn: nextTurn, pieces: result});
-        setSelected(null);
+        setCurrentState({turn: nextTurn, selected: null, pieces: result});
     }
 
     function boardMouseUp(mouseEvent) {
@@ -388,9 +387,9 @@ export function Board() {
         );
     const displayPieces = React.createElement('g',{}, displayPiecesSvgJsx);
 
-    const selectedPiece = selected === null ? <g></g> : convertPieceToSvg(selected);
+    const selectedPiece = currentState.selected === null ? <g></g> : convertPieceToSvg(currentState.selected);
 
-    return (<div><p>Turn: {currentPieces.turn}</p><svg
+    return (<div><p>Turn: {currentState.turn}</p><svg
         xmlns="http://www.w3.org/2000/svg"
         width="640"
         height="640"
