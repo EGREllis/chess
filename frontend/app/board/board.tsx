@@ -4,8 +4,8 @@ import {useState} from 'react';
 function convertPieceToSvg(piece) {
     const x = piece.x;
     const y = piece.y;
-    const colour = piece.colour;
-    const type = piece.type;
+    const colour = piece.colour.toLowerCase();
+    const type = piece.type.toLowerCase();
 
     const tx = x * 50;
     const ty = y * 50;
@@ -298,6 +298,10 @@ export function Board() {
                 ]
         });
 
+    function fetchNewBoard() {
+
+    }
+
     function filterOutSelectedPiece() {
         if (currentState.selected === null) {
             return currentState.pieces;
@@ -341,7 +345,7 @@ export function Board() {
         const boardPoint = mousePointToBoardPoint(mouseEvent);
         const newSelected = identifySelectPiece(currentState.pieces, boardPoint);
         // Prevent moving pieces if it is not their turn.
-        if (newSelected != null && newSelected.colour === currentState.turn) {
+        if (newSelected != null && newSelected.colour.toLowerCase() === currentState.turn.toLowerCase()) {
             setCurrentState({turn: currentState.turn, selected: newSelected, pieces: currentState.pieces});
         }
     }
@@ -369,7 +373,7 @@ export function Board() {
         }
         var nextTurn = null;
         if (moved) {
-            nextTurn = currentState.turn === "black" ? "white" : "black";
+            nextTurn = currentState.turn.toLowerCase() === "black" ? "white" : "black";
         } else {
             nextTurn = currentState.turn;
         }
