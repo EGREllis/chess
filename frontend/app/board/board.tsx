@@ -260,46 +260,29 @@ export function Board() {
     const squares = React.createElement('g',{},lightSquaresSvgJsx);
 
     const [currentState, setCurrentState] = useState({
-        turn:"black",
+        turn: 'black',
         selected: null,
-        pieces:[{x:0,   y:0,    colour:"black", type:"rook"},
-                {x:1,   y:0,    colour:"black", type:"knight"},
-                {x:2,   y:0,    colour:"black", type:"bishop"},
-                {x:3,   y:0,    colour:"black", type:"king"},
-                {x:4,   y:0,    colour:"black", type:"queen"},
-                {x:5,   y:0,    colour:"black", type:"bishop"},
-                {x:6,   y:0,    colour:"black", type:"knight"},
-                {x:7,   y:0,    colour:"black", type:"rook"},
-                {x:0,   y:1,    colour:"black", type:"pawn"},
-                {x:1,   y:1,    colour:"black", type:"pawn"},
-                {x:2,   y:1,    colour:"black", type:"pawn"},
-                {x:3,   y:1,    colour:"black", type:"pawn"},
-                {x:4,   y:1,    colour:"black", type:"pawn"},
-                {x:5,   y:1,    colour:"black", type:"pawn"},
-                {x:6,   y:1,    colour:"black", type:"pawn"},
-                {x:7,   y:1,    colour:"black", type:"pawn"},
-                {x:0,   y:6,    colour:"white", type:"pawn"},
-                {x:1,   y:6,    colour:"white", type:"pawn"},
-                {x:2,   y:6,    colour:"white", type:"pawn"},
-                {x:3,   y:6,    colour:"white", type:"pawn"},
-                {x:4,   y:6,    colour:"white", type:"pawn"},
-                {x:5,   y:6,    colour:"white", type:"pawn"},
-                {x:6,   y:6,    colour:"white", type:"pawn"},
-                {x:7,   y:6,    colour:"white", type:"pawn"},
-                {x:0,   y:7,    colour:"white", type:"rook"},
-                {x:1,   y:7,    colour:"white", type:"knight"},
-                {x:2,   y:7,    colour:"white", type:"bishop"},
-                {x:3,   y:7,    colour:"white", type:"king"},
-                {x:4,   y:7,    colour:"white", type:"queen"},
-                {x:5,   y:7,    colour:"white", type:"bishop"},
-                {x:6,   y:7,    colour:"white", type:"knight"},
-                {x:7,   y:7,    colour:"white", type:"rook"},
-                // More to follow but really ought to be provided by the server
-                ]
-        });
+        pieces: []
+    });
 
-    function fetchNewBoard() {
+    async function fetchNewBoard() {
+            const url = "http://localhost/api/start";
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Response status ${response.status}`);
+                }
 
+                const result = await response.json();
+                console.log(result);
+                setCurrentState(result);
+            } catch (e) {
+                console.log(e.message);
+            }
+        }
+
+    if (currentState.pieces.length === 0) {
+        fetchNewBoard();
     }
 
     function filterOutSelectedPiece() {
