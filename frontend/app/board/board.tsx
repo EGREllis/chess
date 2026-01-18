@@ -333,6 +333,34 @@ export function Board() {
         }
     }
 
+    function encodeMove(boardPoint) {
+        if (currentState.selected === null) {
+            return "";
+        }
+        const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+        var piece = "";
+        switch(currentState.selected.type.toLowerCase()) {
+            case "rook":
+                piece = 'R';
+                break;
+            case "knight":
+                piece = 'N';
+                break;
+            case "bishop":
+                piece = 'B';
+                break;
+            case "queen":
+                piece = 'Q';
+                break;
+            case "king":
+                piece = 'K';
+                break;
+        }
+        const from = letters[currentState.selected.x] + (currentState.selected.y+1);
+        const to = letters[boardPoint.x] + (boardPoint.y+1);
+        return piece+from+"-"+to;
+    }
+
     function updateBoard(boardPoint) {
         if (currentState.selected === null) {
             return;
@@ -365,6 +393,8 @@ export function Board() {
 
     function boardMouseUp(mouseEvent) {
         const boardPoint = mousePointToBoardPoint(mouseEvent);
+        const move=encodeMove(boardPoint);
+        console.log(move);
         updateBoard(boardPoint);
     }
 
