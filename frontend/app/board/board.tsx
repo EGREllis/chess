@@ -281,6 +281,28 @@ export function Board() {
             }
         }
 
+    async function postMove(move) {
+        const url = "http://localhost/api/move";
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                body: JSON.stringify({encoded: move}),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            if (!response.ok) {
+                throw new Error(`Response status ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log("New board state: "+JSON.stringify(result));
+            setCurrentState(result);
+        } catch (error) {
+            console.log("Error: "+error.message);
+        }
+    }
+
     if (currentState.pieces.length === 0) {
         fetchNewBoard();
     }
@@ -395,7 +417,8 @@ export function Board() {
         const boardPoint = mousePointToBoardPoint(mouseEvent);
         const move=encodeMove(boardPoint);
         console.log(move);
-        updateBoard(boardPoint);
+        //updateBoard(boardPoint);  The frontend is now dependent on the backend for state.
+        postMove(move);
     }
 
     const displayPiecesData = filterOutSelectedPiece();

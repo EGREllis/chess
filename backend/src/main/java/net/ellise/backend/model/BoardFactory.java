@@ -1,7 +1,10 @@
 package net.ellise.backend.model;
 
+import org.springframework.stereotype.Component;
+
 import java.util.List;
 
+@Component
 public class BoardFactory {
     public Board newBoard() {
         List<Piece> startingPieces = List.of(
