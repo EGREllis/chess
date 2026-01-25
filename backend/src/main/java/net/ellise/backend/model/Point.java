@@ -19,4 +19,8 @@ public record Point(int x, int y) {
     public String toString() {
         return String.format("(%1$d,%2$d)", x, y);
     }
+
+    public Point apply(Vector vector) {
+        return new Point(x + vector.dx(), y + vector.dy());
+    }
 }

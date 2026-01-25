@@ -413,12 +413,28 @@ export function Board() {
         setCurrentState({turn: nextTurn, selected: null, pieces: result});
     }
 
+    function isRealMove(move, boardPoint) {
+        if (move === "") {
+            return false;
+        } else if (boardPoint.x === currentState.selected.x && boardPoint.y == currentState.selected.y) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     function boardMouseUp(mouseEvent) {
         const boardPoint = mousePointToBoardPoint(mouseEvent);
-        const move=encodeMove(boardPoint);
+        const move = encodeMove(boardPoint);
         console.log(move);
         //updateBoard(boardPoint);  The frontend is now dependent on the backend for state.
-        postMove(move);
+        if (isRealMove(move, boardPoint)) {
+            // A real piece was moved, communicate with server.
+            postMove(move);
+        } else {
+            // Clear the selection
+            currentState.selected = null;
+        }
     }
 
     const displayPiecesData = filterOutSelectedPiece();

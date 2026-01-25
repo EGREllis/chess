@@ -17,6 +17,6 @@ public class BoardToChessBoardConverter implements Converter<Board, ChessBoard> 
             Point point = new Point(boardPiece.x(), boardPiece.y());
             pieces.put(point, new Token(boardPiece.colour(), boardPiece.type()));
         }
-        return new ChessBoard(pieces);
+        return new ChessBoard(input.getTurn(), pieces);
     }
 }

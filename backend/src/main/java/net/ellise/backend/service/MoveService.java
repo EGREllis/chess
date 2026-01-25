@@ -1,5 +1,6 @@
 package net.ellise.backend.service;
 
+import lombok.extern.slf4j.Slf4j;
 import net.ellise.backend.io.Board;
 import net.ellise.backend.io.BoardMove;
 import net.ellise.backend.io.BoardPiece;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Slf4j
 @Component
 public class MoveService {
 
@@ -64,15 +66,15 @@ public class MoveService {
         ValidatedChessMove validatedChessMove = validator.validate(chessMove, preMoveChessBoard);
         Board board;
         if (Validity.VALID.equals(validatedChessMove.validity())) {
+            log.info("Applying valid move: "+chessMove);
             ChessBoard postMoveChessBoard = chessEngine.applyMove(validatedChessMove, preMoveChessBoard);
             chessBoardRepository.setChessBoard(postMoveChessBoard);
-            Colour turn = Colour.BLACK; //TODO: Track turns
             List<BoardPiece> pieces = chessBoardListConverter.convert(postMoveChessBoard);
-            board = new Board(turn, null, pieces, move, validatedChessMove.validity(), validatedChessMove.invalidMessage());
+            board = new Board(postMoveChessBoard.getTurn(), null, pieces, move, validatedChessMove.validity(), validatedChessMove.invalidMessage());
         } else {
-            Colour turn = Colour.BLACK; //TODO: Track turns
+            log.info("Rejecting invalid move: "+chessMove);
             List<BoardPiece> pieces = chessBoardListConverter.convert(preMoveChessBoard);
-            board = new Board(turn, null, pieces, move, validatedChessMove.validity(), validatedChessMove.invalidMessage());
+            board = new Board(preMoveChessBoard.getTurn(), null, pieces, move, validatedChessMove.validity(), validatedChessMove.invalidMessage());
         }
         return board;
     }

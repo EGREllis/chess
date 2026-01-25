@@ -46,6 +46,6 @@ public class StandardChessBoardFactory implements ChessBoardFactory {
         tokens.put(new Point(6,7), new Token(Colour.WHITE, Type.KNIGHT));
         tokens.put(new Point(7,7), new Token(Colour.WHITE, Type.ROOK));
 
-        return new ChessBoard(tokens);
+        return new ChessBoard(Colour.BLACK, tokens);
     }
 }
