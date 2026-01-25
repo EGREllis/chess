@@ -1,9 +1,9 @@
 package net.ellise.backend.repository;
 
-import net.ellise.backend.model.Board;
-import net.ellise.backend.model.Move;
+import net.ellise.backend.io.Board;
+import net.ellise.backend.io.BoardMove;
 
 public interface BoardRepository {
     Board newBoard();
-    Board applyMove(Move move);
+    Board applyMove(BoardMove boardMove);
 }

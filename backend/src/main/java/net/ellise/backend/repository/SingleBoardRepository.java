@@ -1,9 +1,9 @@
 package net.ellise.backend.repository;
 
-import net.ellise.backend.model.Board;
-import net.ellise.backend.model.BoardEngine;
-import net.ellise.backend.model.BoardFactory;
-import net.ellise.backend.model.Move;
+import net.ellise.backend.io.Board;
+import net.ellise.backend.io.BoardEngine;
+import net.ellise.backend.io.BoardFactory;
+import net.ellise.backend.io.BoardMove;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -24,8 +24,8 @@ public class SingleBoardRepository implements BoardRepository {
     }
 
     @Override
-    public Board applyMove(Move move) {
-        Board nextBoard = boardEngine.applyMove(move, theBoard);
+    public Board applyMove(BoardMove boardMove) {
+        Board nextBoard = boardEngine.applyMove(boardMove, theBoard);
         theBoard = nextBoard;
         return nextBoard;
     }

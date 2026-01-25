@@ -1,4 +1,4 @@
-package net.ellise.backend.model;
+package net.ellise.backend.io;
 
 import org.springframework.stereotype.Component;
 
@@ -10,7 +10,7 @@ public class BoardEngine {
         this.boardFactory = boardFactory;
     }
 
-    public Board applyMove(Move move, Board board) {
+    public Board applyMove(BoardMove boardMove, Board board) {
         return boardFactory.newBoard();
     }
 }

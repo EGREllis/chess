@@ -6,8 +6,8 @@ docker compose up --build
 in the root directory.
 
 Current functionality:
-Frontend can render a chess board with pieces.
-Frontend loads the chess pieces from the backend.
+Frontend can render a chess board with boardPieces.
+Frontend loads the chess boardPieces from the backend.
 
 Future functionality:
 Frontend should encode moves and send them to the backend.

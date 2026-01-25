@@ -1,9 +1,9 @@
-package net.ellise.backend.model;
+package net.ellise.backend.io;
 
-public class Move {
+public class BoardMove {
     private final String encoded;
 
-    public Move(String encoded) {
+    public BoardMove(String encoded) {
         this.encoded = encoded;
     }
 

@@ -1,8 +1,8 @@
 package net.ellise.backend.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import net.ellise.backend.model.Board;
-import net.ellise.backend.model.Move;
+import net.ellise.backend.io.Board;
+import net.ellise.backend.io.BoardMove;
 import net.ellise.backend.repository.BoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,8 +22,7 @@ public class MoveController {
     }
 
     @PostMapping("/api/move")
-    public Board applyMove(@RequestBody Move move) {
-        System.err.println("Applying move "+move);
-        return repository.applyMove(move);
+    public Board applyMove(@RequestBody BoardMove boardMove) {
+        return repository.applyMove(boardMove);
     }
 }
