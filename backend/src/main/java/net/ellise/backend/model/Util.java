@@ -19,7 +19,7 @@ public class Util {
         return results;
     }
 
-    private static boolean isOnBoard(Point point) {
+    public static boolean isOnBoard(Point point) {
         return point.x() >= MIN_X &&
                 point.x() <= MAX_X &&
                 point.y() >= MIN_Y &&
