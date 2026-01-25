@@ -4,12 +4,14 @@ import net.ellise.backend.io.BoardMove;
 import net.ellise.backend.model.ChessMove;
 import net.ellise.backend.model.Point;
 import net.ellise.backend.model.Type;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Component
 public class BoardMoveToChessMoveConverter implements Converter<BoardMove, ChessMove> {
     private static final Pattern ENCODED_PATTERN = Pattern.compile("^([RNBQK])?([abcdefgh])([12345678])-([abcdefgh])([12345678])");
     private static final Map<String,Integer> COLUMNS = new HashMap<>();

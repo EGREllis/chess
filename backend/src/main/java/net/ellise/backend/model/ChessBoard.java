@@ -20,4 +20,10 @@ public class ChessBoard {
     public void remove(Point point) {
         piecePlacement.remove(point);
     }
+
+    public void visitAll(ChessBoardVisitor visitor) {
+        for (Map.Entry<Point, Token> tokens : piecePlacement.entrySet()) {
+            visitor.visit(tokens.getKey(), tokens.getValue());
+        }
+    }
 }
