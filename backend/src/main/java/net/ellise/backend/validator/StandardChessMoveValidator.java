@@ -1,11 +1,7 @@
 package net.ellise.backend.validator;
 
-import lombok.extern.slf4j.Slf4j;
 import net.ellise.backend.model.*;
-import net.ellise.backend.model.factory.NoValidMovePointFactory;
-import net.ellise.backend.model.factory.PawnValidatorPointFactory;
-import net.ellise.backend.model.factory.PointFactory;
-import net.ellise.backend.model.factory.RookValidatorPointFactory;
+import net.ellise.backend.model.factory.*;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -17,10 +13,10 @@ public class StandardChessMoveValidator implements ChessMoveValidator {
     static {
         VALIDATORS.put(Type.PAWN, new PawnValidatorPointFactory());
         VALIDATORS.put(Type.ROOK, new RookValidatorPointFactory());
-        VALIDATORS.put(Type.KNIGHT, new NoValidMovePointFactory()); //TODO: Implement this
-        VALIDATORS.put(Type.BISHOP, new NoValidMovePointFactory()); //TODO: Implement this
-        VALIDATORS.put(Type.QUEEN, new NoValidMovePointFactory());  //TODO: Implement this
-        VALIDATORS.put(Type.KING, new NoValidMovePointFactory());   //TODO: Implement this
+        VALIDATORS.put(Type.KNIGHT, new KnightValidatorPointFactory());
+        VALIDATORS.put(Type.BISHOP, new BishopValidatorPointFactory());
+        VALIDATORS.put(Type.QUEEN, new QueenValidatorPointFactory());
+        VALIDATORS.put(Type.KING, new KingValidatorPointFactory());
     }
 
     @Override
